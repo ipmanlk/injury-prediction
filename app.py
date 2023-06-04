@@ -43,6 +43,20 @@ user_status = {
     },
 }
 
+def get_blood_pressure(heart_rate, age=24, sex="male", weight=90, height=180, position="stand up"):
+    R = 18.5  # Average R = 18.31; // Vascular resistance // Very hard to calculate from person to person
+    Q = 5 if sex.lower() in ["male", "m"] else 4.5  # Liters per minute of blood through heart
+    ejection_time = 386 - 1.64 * heart_rate if position.lower() != "laying down" else 364.5 - 1.23 * heart_rate
+    body_surface_area = 0.007184 * (weight ** 0.425) * (height ** 0.725)
+    stroke_volume = -6.6 + 0.25 * (ejection_time - 35) - 0.62 * heart_rate + 40.4 * body_surface_area - 0.51 * age
+    pulse_pressure = abs(stroke_volume / ((0.013 * weight - 0.007 * age - 0.004 * heart_rate) + 1.307))
+    mean_pulse_pressure = Q * R
+
+    systolic_pressure = int(mean_pulse_pressure + 4.5 / 3 * pulse_pressure)
+    diastolic_pressure = int(mean_pulse_pressure - pulse_pressure / 3)
+
+    return systolic_pressure, diastolic_pressure
+
 # POST request
 @app.route('/process-sensor-data', methods=['POST'])
 def setSensorData():
@@ -52,14 +66,7 @@ def setSensorData():
     heartRate = float(data['heartRate'])
     oxygenSaturation = float(data['oxygenSaturation'])
     temperature = float(data['temperature'])
-    systolicBloodPressure = float(data['systolicBloodPressure'])
-    diastolicBloodPressure = float(data['diastolicBloodPressure'])
-    longitude = float(data['longitude'])
-    latitude = float(data['latitude'])
-    policeLati  = float(data['policeLati'])
-    policeLong  = float(data['policeLong'])
-    ambuLati  = float(data['ambuLati'])
-    ambuLong  = float(data['ambuLong'])
+    systolicBloodPressure, diastolicBloodPressure = get_blood_pressure(heartRate)
 
     new_data = pd.DataFrame({'heartRate': [heartRate], 'oxygenSaturation': [oxygenSaturation], 'temperature': [temperature], 'systolicBloodPressure': [systolicBloodPressure], 'diastolicBloodPressure': [diastolicBloodPressure]})
 
@@ -70,7 +77,7 @@ def setSensorData():
 
     # check if user model exists load it. otherwise load default model
     if user_model_path.exists(): 
-        print("Using user model")
+        print("Using personalized model")
         with open(user_model_path, 'rb') as file:
             user_model = pickle.load(file)
        
@@ -88,12 +95,7 @@ def setSensorData():
         "systolicBloodPressure": systolicBloodPressure,
         "diastolicBloodPressure": diastolicBloodPressure,
         "status": predictions[0],
-        "longitude": longitude,
-        "latitude": latitude,
-        "policeLati": policeLati,
-        "policeLong": policeLong,
-        "ambuLati": ambuLati,
-        "ambuLong": ambuLong,
+        "isEmergencyButtonPressed" : data["isEmergencyButtonPressed"]
     }
 
     has_enough_data = check_user_data(uid)

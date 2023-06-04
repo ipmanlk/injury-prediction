@@ -5,3 +5,4 @@ data/*
 models/*
 !models/.gitkeep
 __pycache__
+env
