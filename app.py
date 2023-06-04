@@ -78,6 +78,8 @@ def get_blood_pressure(heart_rate, age=24, sex="male", weight=90, height=180, po
 def setSensorData():
     data = request.get_json()
 
+    data['uid'] = str(data['uid'])
+
     uid = data['uid']
     heartRate = float(data['heartRate'])
     oxygenSaturation = float(data['oxygenSaturation'])
@@ -127,14 +129,14 @@ def setSensorData():
 # GET request
 @app.route('/fetch-user-status', methods=['GET'])
 def fetchData():
-    uid = request.args.get('uid')
+    uid = str(request.args.get('uid'))
     return user_status[uid]
 
 
 # DELETE request
 @app.route('/alert-status', methods=['DELETE'])
 def setAlert():
-    uid = request.args.get('uid')
+    uid = str(request.args.get('uid'))
     if uid in ongoing_alerts:
         del ongoing_alerts[uid]
         return jsonify({'result': True})
@@ -144,8 +146,9 @@ def setAlert():
 @app.route('/store-user-location', methods=['POST'])
 def storeUserLocation():
     data = request.get_json()
+    data['uid'] = str(data['uid'])
 
-    uid = data['uid']
+    uid = data['uid']   
     longitude = data['longitude']
     latitude = data['latitude']
 
@@ -155,13 +158,13 @@ def storeUserLocation():
     }
 
     # return all user locations after json stringifying
-    return {"userLocations":user_locations}
+    return user_locations
 
 
 # endpoint for fetching user location
 @app.route('/fetch-user-location', methods=['GET'])
 def fetchUserLocation():
-    uid = request.args.get('uid')
+    uid = str(request.args.get('uid'))
     return {"userLocation":user_locations[uid]}
 
 app.run(debug=True)
