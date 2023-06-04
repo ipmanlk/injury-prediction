@@ -43,6 +43,22 @@ user_status = {
     },
 }
 
+user_locations = {
+    "123" : {
+        "longitude": 0,
+        "latitude": 0,
+    },
+    "456" : {
+        "longitude": 0,
+        "latitude": 0,
+    },
+    "789": {
+        "longitude": 0,
+        "latitude": 0,
+    }
+}
+
+
 def get_blood_pressure(heart_rate, age=24, sex="male", weight=90, height=180, position="stand up"):
     R = 18.5  # Average R = 18.31; // Vascular resistance // Very hard to calculate from person to person
     Q = 5 if sex.lower() in ["male", "m"] else 4.5  # Liters per minute of blood through heart
@@ -123,5 +139,29 @@ def setAlert():
         del ongoing_alerts[uid]
         return jsonify({'result': True})
 
+
+# endpoint for storing user location
+@app.route('/store-user-location', methods=['POST'])
+def storeUserLocation():
+    data = request.get_json()
+
+    uid = data['uid']
+    longitude = data['longitude']
+    latitude = data['latitude']
+
+    user_locations[uid] = {
+        "longitude": longitude,
+        "latitude": latitude,
+    }
+
+    # return all user locations after json stringifying
+    return {"userLocations":user_locations}
+
+
+# endpoint for fetching user location
+@app.route('/fetch-user-location', methods=['GET'])
+def fetchUserLocation():
+    uid = request.args.get('uid')
+    return {"userLocation":user_locations[uid]}
 
 app.run(debug=True)
