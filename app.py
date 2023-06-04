@@ -127,8 +127,8 @@ def setSensorData():
 # GET request
 @app.route('/fetch-user-status', methods=['GET'])
 def fetchData():
-    uid = int(request.args.get('uid'))
-    return {"userData":user_status[uid]}
+    uid = request.args.get('uid')
+    return user_status[uid]
 
 
 # DELETE request
