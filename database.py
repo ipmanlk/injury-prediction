@@ -50,12 +50,12 @@ def get_user_data(uid):
     conn = sqlite3.connect(DATABASE_NAME)
     cursor = conn.cursor()
     
-    two_weeks_ago = (datetime.now() - timedelta(weeks=2)).strftime('%Y-%m-%d %H:%M:%S')
+    week_ago = (datetime.now() - timedelta(weeks=1)).strftime('%Y-%m-%d %H:%M:%S')
     
     cursor.execute('''
         SELECT * FROM sensor_data
         WHERE uid = ? AND created_time >= ?
-    ''', (uid, two_weeks_ago))
+    ''', (uid, week_ago))
     
     data = cursor.fetchall()
     
@@ -75,12 +75,12 @@ def check_user_data(uid):
     oldest_record_time = cursor.fetchone()[0]
     
     if oldest_record_time is not None:
-        two_weeks_ago = (datetime.now() - timedelta(weeks=2))
+        week_ago = (datetime.now() - timedelta(weeks=1))
         oldest_record_time = datetime.strptime(oldest_record_time, '%Y-%m-%d %H:%M:%S')
         
         conn.close()
         
-        return oldest_record_time <= two_weeks_ago
+        return oldest_record_time <= week_ago
     
     conn.close()
     
