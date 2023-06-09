@@ -45,16 +45,16 @@ user_status = {
 
 user_locations = {
     "123" : {
-        "longitude": 0,
-        "latitude": 0,
+        "longitude": 0.0,
+        "latitude": 0.0,
     },
     "456" : {
-        "longitude": 0,
-        "latitude": 0,
+        "longitude": 0.0,
+        "latitude": 0.0,
     },
     "789": {
-        "longitude": 0,
-        "latitude": 0,
+        "longitude": 0.0,
+        "latitude": 0.0,
     }
 }
 
@@ -68,7 +68,7 @@ def get_blood_pressure(heart_rate, age=24, sex="male", weight=90, height=180, po
     pulse_pressure = abs(stroke_volume / ((0.013 * weight - 0.007 * age - 0.004 * heart_rate) + 1.307))
     mean_pulse_pressure = Q * R
 
-    systolic_pressure = int(mean_pulse_pressure + 4.5 / 3 * pulse_pressure)
+    systolic_pressure = int(mean_pulse_pressure + 4.5 / 3 * pulse_pressure)-30
     diastolic_pressure = int(mean_pulse_pressure - pulse_pressure / 3)
 
     return systolic_pressure, diastolic_pressure
