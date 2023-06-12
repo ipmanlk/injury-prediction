@@ -14,7 +14,7 @@ def generate_default_model():
   df = pd.read_csv(DATASET_PATH)
   df.columns = df.columns.str.strip()
   
-  X = df.drop('OUTPUT', axis=1)
+  X = df.drop(['OUTPUT', "systolicBloodPressure", "diastolicBloodPressure"], axis=1)
   y = df['OUTPUT']
   
   X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -38,6 +38,7 @@ def generate_user_model(uid):
 
     # Filter abnormal entries
     user_entries = df[df['OUTPUT'] == 'Abnormal']
+    user_entries.drop(["systolicBloodPressure", "diastolicBloodPressure"], axis=1)
 
     # Get user data from database
     user_data = get_user_data(uid)
@@ -46,7 +47,7 @@ def generate_user_model(uid):
     user_df = pd.DataFrame(user_data, columns=['id', 'uid', 'created_time', 'heartRate', 'oxygenSaturation', 'temperature', 'systolicBloodPressure', 'diastolicBloodPressure', 'status'])
 
     user_df_status = user_df['status']
-    user_df = user_df.drop(['id', 'uid', 'created_time', "status"], axis=1)
+    user_df = user_df.drop(['id', 'uid', 'created_time', "systolicBloodPressure", "diastolicBloodPressure", "status"], axis=1)
     user_df['OUTPUT'] = user_df_status
 
     # merge the user_df with the user_entries

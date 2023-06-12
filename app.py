@@ -86,7 +86,7 @@ def setSensorData():
     temperature = float(data['temperature'])
     systolicBloodPressure, diastolicBloodPressure = get_blood_pressure(heartRate)
 
-    new_data = pd.DataFrame({'heartRate': [heartRate], 'oxygenSaturation': [oxygenSaturation], 'temperature': [temperature], 'systolicBloodPressure': [systolicBloodPressure], 'diastolicBloodPressure': [diastolicBloodPressure]})
+    new_data = pd.DataFrame({'heartRate': [heartRate], 'oxygenSaturation': [oxygenSaturation], 'temperature': [temperature]})
 
 
     user_model_path = Path(__file__).parent / "models" / f"{uid}.pkl"
@@ -121,8 +121,8 @@ def setSensorData():
     # Save data in the database
     store_user_data(uid, user_status[uid])
 
-    if has_enough_data:
-        generate_user_model(uid)
+
+    generate_user_model(uid)
 
     return user_status[uid]
 
