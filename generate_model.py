@@ -14,7 +14,7 @@ def generate_default_model():
   df = pd.read_csv(DATASET_PATH)
   df.columns = df.columns.str.strip()
   
-  X = df.drop('OUTPUT', axis=1)
+  X = df.drop(['OUTPUT', "systolicBloodPressure", "diastolicBloodPressure"], axis=1)
   y = df['OUTPUT']
   
   X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -37,7 +37,8 @@ def generate_user_model(uid):
     df.columns = df.columns.str.strip()
 
     # Filter abnormal entries
-    user_entries = df[df['OUTPUT'] == 'Abnormal']
+    csv_entries = df[df['OUTPUT'] == 'Abnormal']
+    csv_entries = csv_entries.drop(["systolicBloodPressure", "diastolicBloodPressure"], axis=1)
 
     # Get user data from database
     user_data = get_user_data(uid)
@@ -46,15 +47,16 @@ def generate_user_model(uid):
     user_df = pd.DataFrame(user_data, columns=['id', 'uid', 'created_time', 'heartRate', 'oxygenSaturation', 'temperature', 'systolicBloodPressure', 'diastolicBloodPressure', 'status'])
 
     user_df_status = user_df['status']
-    user_df = user_df.drop(['id', 'uid', 'created_time', "status"], axis=1)
+    user_df = user_df.drop(['id', 'uid', 'created_time', "status", "systolicBloodPressure", "diastolicBloodPressure"], axis=1)
     user_df['OUTPUT'] = user_df_status
 
     # merge the user_df with the user_entries
-    user_entries = pd.concat([user_entries, user_df])
+    csv_entries = pd.concat([csv_entries, user_df])
+
 
     # Split the dataset into X and y
-    X = user_entries.drop('OUTPUT', axis=1)
-    y = user_entries['OUTPUT']
+    X = csv_entries.drop('OUTPUT', axis=1)
+    y = csv_entries['OUTPUT']
 
     # Split the dataset into train and test
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
@@ -66,6 +68,4 @@ def generate_user_model(uid):
     # Save the model
     model_path = Path(__file__).parent / "models" / f"{uid}.pkl"
     with open(model_path, 'wb') as file:
-        pickle.dump(model, file)
-        
-
+        pickle.dump(model, file)        

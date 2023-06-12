@@ -31,8 +31,6 @@ user_status = {
         "heartRate": 78,
         "oxygenSaturation": 90,
         "temperature": 37,
-        "systolicBloodPressure": 120,
-        "diastolicBloodPressure": 80,
         "longitude": 10.123,
         "latitude": 15.123,
         "status": "normal",
@@ -86,8 +84,7 @@ def setSensorData():
     temperature = float(data['temperature'])
     systolicBloodPressure, diastolicBloodPressure = get_blood_pressure(heartRate)
 
-    new_data = pd.DataFrame({'heartRate': [heartRate], 'oxygenSaturation': [oxygenSaturation], 'temperature': [temperature], 'systolicBloodPressure': [systolicBloodPressure], 'diastolicBloodPressure': [diastolicBloodPressure]})
-
+    new_data = pd.DataFrame({'heartRate': [heartRate], 'oxygenSaturation': [oxygenSaturation], 'temperature': [temperature]})
 
     user_model_path = Path(__file__).parent / "models" / f"{uid}.pkl"
 
