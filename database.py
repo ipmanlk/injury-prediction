@@ -30,6 +30,28 @@ def store_user_data(uid, data):
     conn = sqlite3.connect(DATABASE_NAME)
     cursor = conn.cursor()
     
+    abnormal_count = 0
+
+    if data['heartRate'] < 50 or data['heartRate'] > 130:
+        abnormal_count += 1
+
+    if data['oxygenSaturation'] < 90 or data['oxygenSaturation'] > 100:
+        abnormal_count += 1
+    
+    if data['temperature'] < 31 or data['temperature'] > 38:
+        abnormal_count += 1
+
+    if data['systolicBloodPressure'] < 90 or data['systolicBloodPressure'] > 160:
+        abnormal_count += 1
+
+    if data['diastolicBloodPressure'] < 60 or data['diastolicBloodPressure'] > 110:
+        abnormal_count += 1
+
+    if abnormal_count >= 2:
+        data['status'] = "Abnormal"
+    else:
+        data['status'] = "Normal"
+
     created_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     
     cursor.execute('''

@@ -79,9 +79,9 @@ def setSensorData():
     data['uid'] = str(data['uid'])
 
     uid = data['uid']
-    heartRate = float(data['heartRate'])
-    oxygenSaturation = float(data['oxygenSaturation'])
-    temperature = float(data['temperature'])
+    heartRate =  round(float(data['heartRate']), 1)
+    oxygenSaturation = round(float(data['oxygenSaturation']), 1)
+    temperature = round(float(data['temperature']), 1)
     systolicBloodPressure, diastolicBloodPressure = get_blood_pressure(heartRate)
 
     new_data = pd.DataFrame({'heartRate': [heartRate], 'oxygenSaturation': [oxygenSaturation], 'temperature': [temperature]})
@@ -102,6 +102,10 @@ def setSensorData():
         print("Using default model")
         predictions = loaded_model.predict(new_data)
 
+
+    # isEmergencyButtonPressed is string 0 or 1. Convert to boolean
+    isEmergencyButtonPressed = bool(int(data['isEmergencyButtonPressed']))
+
     # save data
     user_status[uid] = {
         "heartRate": heartRate,
@@ -110,7 +114,7 @@ def setSensorData():
         "systolicBloodPressure": systolicBloodPressure,
         "diastolicBloodPressure": diastolicBloodPressure,
         "status": predictions[0],
-        "isEmergencyButtonPressed" : data["isEmergencyButtonPressed"]
+        "isEmergencyButtonPressed" : isEmergencyButtonPressed
     }
 
     has_enough_data = check_user_data(uid)
